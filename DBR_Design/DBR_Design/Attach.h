@@ -20,6 +20,7 @@
 #include <errno.h>
 
 #include <cmath>
+#include <complex>
 #include <vector>
 
 #include <algorithm>
@@ -66,6 +67,7 @@ static const std::string dottxt = ".txt";
 #include "Neville.h"
 #include "Material_Models.h"
 #include "Dispersion_Calc.h"
+#include "DBR_Calcs.h"
 #include "Test_Functions.h"
 
 #endif
