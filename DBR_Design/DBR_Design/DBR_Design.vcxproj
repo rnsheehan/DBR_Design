@@ -116,6 +116,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Attach.h" />
+    <ClInclude Include="DBR_Calcs.h" />
     <ClInclude Include="Dispersion_Calc.h" />
     <ClInclude Include="Eff_Indx_Method.h" />
     <ClInclude Include="Material_Models.h" />
@@ -127,6 +128,7 @@
     <ClInclude Include="Vector_Utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DBR_Calcs.cpp" />
     <ClCompile Include="Dispersion_Calc.cpp" />
     <ClCompile Include="Eff_Indx_Method.cpp" />
     <ClCompile Include="Main.cpp" />

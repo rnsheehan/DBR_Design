@@ -22,34 +22,54 @@ protected:
 
 	~DBR(); 
 
-	void set_params(double &wl_res, sweep &swp_obj, std::vector<double> &neff_w_low, std::vector<double> &neff_w_mid, std::vector<double> &neff_w_high);
+	void set_params(double &min_feature, double &wl_Bragg, std::vector<double> &wl_vals, std::vector<double> &neff_w_low, std::vector<double> &neff_w_mid, std::vector<double> &neff_w_high, std::vector<double> &ngroup_w_mid);
 
-	void compute_coefficients(); // compute the data for delta_, delta_beta, kappa, gamma
+	void coefficients(); // compute the data for delta_, delta_beta, kappa, gamma
 
-	void compute_r_spectrum(double &L_DBR); //  compute the DBR reflectivity, actual value depends on number of grating periods used
+	void r_spectrum(double &L_DBR); //  compute the DBR reflectivity, actual value depends on number of grating periods used
 
-	void compute_Lambda_Rpeak_BW(double &L_DBR, double &Period, double &Rpeak, double &BW); // compute the DBR peak reflectivity and bandwidth
-
+	void Lambda_Rpeak_BW(double &L_DBR, double &Rpeak, double &BW); // compute the DBR peak reflectivity and bandwidth
 
 private:
+	double beta(double &lambda, double &neff); 
+	
+	std::complex<double> reflectivity(double &L_DBR, double &kval, double &wavel, double &delta_b, std::complex<double> &gval); 
+
+	void period();
+	void index_contrast(); 
+	void beta_contrast(); 
+	void coupling_coeffs(); 
+	void gamma_coeffs(); 
+
+private:
+	bool inputs_defined;
+	bool coefficients_defined; 
+
+	int n_wl_vals; // size of wavelength spectrum
+	int n_periods; // number of periods that are needed to form grating structure, depends on desired length
+	int Bragg_order; // order of grating structure, determined by size of min. feature possible
+
 	//double L; // length of DBR structure in units of nm
-	double Bragg_WL; // resonance wavelength of DBR structure
-	//double Period; // period of DBR structure in units of nm
+	double min_feat_size; // minimum feature size possible during lithography, in units of nm
+	double Bragg_WL; // resonance wavelength of DBR structure in units of nm
+	double Bragg_Period; // period of DBR structure in units of nm
+	double Bragg_neff; // effective index of DBR
+	double Bragg_beta; // propagation constant of DBR in units of nm^{-1}
 	//double Rpeak; // peak reflectivity of DBR structure
 	//double BW; // spectral bandwidth of DBR structure
 
-	std::vector<double> wavelengths; // wavelengths over which effective index values are computed
+	std::vector<double> wavelengths; // wavelengths over which effective index values are computed in units of nm
 	std::vector<double> neff_m; // effective indices of the main input waveguide
 	std::vector<double> neff_l; // effective indices of the low width waveguide
 	std::vector<double> neff_h; // effective indices of the high width waveguide
+	std::vector<double> ngrp_m; // group index data of the main input waveguide
 	
 	std::vector<double> delta_n; // index contrast for the DBR structure
 	std::vector<double> delta_beta; // propagation constant contrast for the DBR structure
 	std::vector<double> kappa; // coupling coefficients for the DBR structure
-	std::vector<double> r_spectrum; // reflectivity spectrum for the DBR structure
+	std::vector<double> r_spctrm; // reflectivity spectrum for the DBR structure
 
 	std::vector<std::complex<double>> gamma; // coefficients used in the calculation of reflectivity spectrum
-
 };
 
 #endif
