@@ -24,6 +24,10 @@ public:
 
 	void compute_dispersion(bool polarisation, wg_dims &dim_obj, std::string &filename, bool loud = false);
 
+	std::vector<std::vector<double>> get_computed_data(bool cnvrt_wl_nm = true); // return all computed dispersion data
+
+	void clear(); 
+
 private:
 	void compute_group_index(bool loud = false); 
 
@@ -45,15 +49,14 @@ protected:
 	std::vector<double> ng_vals; 
 };
 
-class wire_dispersion : protected dispersion {
+class wire_dispersion : public dispersion {
 public:
 	wire_dispersion(); 
 
 	void compute_dispersion_data(bool polarisation, sweep &swp_obj, wg_dims &dim_obj, material *Ncore, material *Nsub, material *Nclad, std::string &filename, bool loud = false);
-
 };
 
-class rib_dispersion : protected dispersion {
+class rib_dispersion : public dispersion {
 public:
 	rib_dispersion();
 

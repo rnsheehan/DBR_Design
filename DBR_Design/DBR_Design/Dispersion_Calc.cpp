@@ -19,9 +19,7 @@ dispersion::~dispersion()
 {
 	// Deconstructor
 
-	params_defined = false; 
-
-	neff_vals.clear();	ng_vals.clear();
+	clear(); 
 }
 
 void dispersion::set_params(sweep &swp_obj, material *Ncore, material *Nsub, material *Nclad)
@@ -241,6 +239,56 @@ void dispersion::save_data_to_file(std::string &filename)
 	catch (std::runtime_error &e) {
 		std::cerr << e.what();
 	}
+}
+
+std::vector<std::vector<double>> dispersion::get_computed_data(bool cnvrt_wl_nm)
+{
+	// return computed dispersion data as the rows of a new array
+	// R. Sheehan 8 - 5 - 2019
+
+	try {
+		bool c1 = wavelength.defined() ? true : false;
+		bool c2 = static_cast<int>(neff_vals.size()) == wavelength.get_Nsteps() ? true : false;
+		bool c3 = static_cast<int>(ng_vals.size()) == wavelength.get_Nsteps() ? true : false;
+		bool c10 = c1 && c2 && c3;
+
+		if (c10) {
+			std::vector<std::vector<double>> data; 
+
+			data.push_back(wavelength.get_vals()); 
+			data.push_back(neff_vals); 
+			data.push_back(ng_vals); 
+
+			if (cnvrt_wl_nm) {
+				// convert wavelength data to nm
+				for (size_t i = 0; i < data[0].size(); i++) {
+					data[0][i] *= 1000.0; 
+				}
+			}
+
+			return data; 
+		}
+		else {
+			return std::vector<std::vector<double>>(); 
+			std::string reason;
+			reason = "Error: std::vector<std::vector<double>> dispersion::get_computed_data()\n";
+			if (!c1) reason += "wavelength sweep params not defined\n";
+			if (!c2) reason += "neff data not defined\n";
+			if (!c3) reason += "ng data not defined\n";
+			throw std::invalid_argument(reason);
+		}	
+	}
+	catch (std::invalid_argument &e) {
+		useful_funcs::exit_failure_output(e.what());
+		exit(EXIT_FAILURE);
+	}
+}
+
+void dispersion::clear()
+{
+	params_defined = false;
+
+	neff_vals.clear();	ng_vals.clear();
 }
 
 // Defintion of the wire eaveguide dispersion calculation

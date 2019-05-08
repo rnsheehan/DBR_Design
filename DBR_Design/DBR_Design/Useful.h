@@ -39,6 +39,7 @@ public:
 
 	double get_val(int i); // access the ith computed sweep parameter
 
+	std::vector<double> get_vals(); // get all the computed sweep parameters
 private:
 	int Nsteps; 
 

@@ -371,7 +371,7 @@ double slab_tl_neff::zbrent(double x1, double x2, double tol, bool t, int mm)
 			double fa = eigeneqn_3(a, t, mm), fb = eigeneqn_3(b, t, mm);
 
 			if ((fa>0.0 && fb>0.0) || (fa<0.0 && fb<0.0)) {
-				std::cerr << "Root must be bracketed in zbrent\n";
+				//std::cerr << "Root must be bracketed in zbrent\n";
 			}
 			fc = fb;
 			for (iter = 1; iter <= ITMAX; iter++) {

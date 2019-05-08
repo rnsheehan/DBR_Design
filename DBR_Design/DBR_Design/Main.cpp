@@ -10,6 +10,7 @@
 int main() 
 {
 
+	testing::DBR_rib();
 
 	std::cout << "Press enter to close\n"; 
 	std::cin.get(); 

@@ -17,8 +17,9 @@
 // R. Sheehan 7 - 5 - 2019
 
 class DBR {
-protected:
+public:
 	DBR();
+	DBR(double &min_feature, double &wl_Bragg, std::vector<double> &wl_vals, std::vector<double> &neff_w_low, std::vector<double> &neff_w_mid, std::vector<double> &neff_w_high, std::vector<double> &ngroup_w_mid);
 
 	~DBR(); 
 
@@ -28,7 +29,11 @@ protected:
 
 	void r_spectrum(double &L_DBR); //  compute the DBR reflectivity, actual value depends on number of grating periods used
 
-	void Lambda_Rpeak_BW(double &L_DBR, double &Rpeak, double &BW); // compute the DBR peak reflectivity and bandwidth
+	void Lambda_Rpeak_BW(double &L_DBR); // compute the DBR peak reflectivity and bandwidth
+
+	void report(); 
+
+	void save_spctrm_to_file(std::string &filename); 
 
 private:
 	double beta(double &lambda, double &neff); 
@@ -55,8 +60,8 @@ private:
 	double Bragg_Period; // period of DBR structure in units of nm
 	double Bragg_neff; // effective index of DBR
 	double Bragg_beta; // propagation constant of DBR in units of nm^{-1}
-	//double Rpeak; // peak reflectivity of DBR structure
-	//double BW; // spectral bandwidth of DBR structure
+	double Rpeak; // peak reflectivity of DBR structure
+	double BW; // spectral bandwidth of DBR structure
 
 	std::vector<double> wavelengths; // wavelengths over which effective index values are computed in units of nm
 	std::vector<double> neff_m; // effective indices of the main input waveguide

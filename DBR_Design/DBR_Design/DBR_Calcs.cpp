@@ -13,6 +13,12 @@ DBR::DBR()
 	Bragg_WL = Bragg_neff = Bragg_beta = Bragg_Period = min_feat_size = 0.0;
 }
 
+DBR::DBR(double &min_feature, double &wl_Bragg, std::vector<double> &wl_vals, std::vector<double> &neff_w_low, std::vector<double> &neff_w_mid, std::vector<double> &neff_w_high, std::vector<double> &ngroup_w_mid)
+{
+	// Constructor
+	set_params(min_feature, wl_Bragg, wl_vals, neff_w_low, neff_w_mid, neff_w_high, neff_w_mid); 
+}
+
 DBR::~DBR()
 {
 	// Deconstructor
@@ -266,7 +272,7 @@ void DBR::r_spectrum(double &L_DBR)
 			for (int i = 0; i < n_wl_vals; i++) {
 				r = reflectivity(L_DBR, kappa[i], wavelengths[i], delta_beta[i], gamma[i]); 
 				absr = std::abs(r); 
-				r_spctrm.push_back(absr); // Reflectivity is given by |r|^{2}
+				r_spctrm.push_back( template_funcs::DSQR(absr) ); // Reflectance is given by |r|^{2}
 			}
 		}
 		else {
@@ -283,13 +289,13 @@ void DBR::r_spectrum(double &L_DBR)
 	}
 }
 
-void DBR::Lambda_Rpeak_BW(double &L_DBR, double &Rpeak, double &BW)
+void DBR::Lambda_Rpeak_BW(double &L_DBR)
 {
 	// compute the DBR peak reflectivity and bandwidth
 	// R. Sheehan 8 - 5 - 2019
 
 	try {
-		if (coefficients_defined && L_DBR > 0.0 && Bragg_Period > min_feat_size) {
+		if (coefficients_defined && L_DBR > Bragg_Period && Bragg_Period > min_feat_size) {
 
 			n_periods = static_cast<int>(std::floor(L_DBR / Bragg_Period));
 
@@ -376,7 +382,7 @@ std::complex<double> DBR::reflectivity(double &L_DBR, double &kval, double &wave
 	// R. Sheehan 5 - 4 - 2018
 
 	try{
-		if (L_DBR > 0.0) {
+		if (L_DBR > Bragg_Period) {
 			std::complex<double> eye(0.0, 1.0);
 			std::complex<double> sval, cval, gL, numer, denom;
 
@@ -398,5 +404,66 @@ std::complex<double> DBR::reflectivity(double &L_DBR, double &kval, double &wave
 	catch (std::runtime_error &e) {
 		std::cerr << e.what();
 		return std::complex<double>(0.0, 0.0);
+	}
+}
+
+void DBR::report()
+{
+	// Report on the results of a calculation
+	// R. Sheehan 8 - 5 - 2019
+
+	std::cout << "DBR Parameters\n\n"; 
+	std::cout << "Grating WL: " << Bragg_WL << " nm\n"; 
+	std::cout << "Grating Order: " << Bragg_order << "\n"; 
+	std::cout << "Grating Period: " << Bragg_Period << " nm\n"; 
+	std::cout << "Grating Count: " << n_periods << "\n";
+	std::cout << "Grating Length: " << (n_periods * Bragg_Period)/1000.0 << " um\n"; 
+	std::cout << "Grating BW: " << BW << " nm\n"; 
+	std::cout << "Grating R: " << Rpeak << "\n\n"; 
+}
+
+void DBR::save_spctrm_to_file(std::string &filename)
+{
+	// save the computed reflectance spectrum to a file
+	// R. Sheehan 8 - 5 - 2019
+
+	try {
+		bool c1 = wavelengths.size() == r_spctrm.size() ? true : false;
+		bool c2 = filename != empty_str ? true : false;
+		bool c3 = useful_funcs::valid_filename_length(filename);
+		bool c10 = c1 && c2 && c3;
+
+		if (c10) {
+			std::ofstream write(filename, std::ios_base::out, std::ios_base::trunc);
+
+			if (write.is_open()) {
+				for (int i = 0; i < n_wl_vals; i++) {
+					write << std::setprecision(10) << wavelengths[i] << " , " << r_spctrm[i] << "\n"; 
+				}
+
+				write.close(); 
+			}
+			else {
+				std::string reason;
+				reason = "Error: void dispersion::save_data_to_file(std::string &filename)\n";
+				reason += "Could not open file: " + filename + "\n";
+				throw std::runtime_error(reason);
+			}
+		}
+		else {
+			std::string reason;
+			reason = "Error: void dispersion::save_data_to_file()\n";
+			if (!c1) reason += "wavelength sweep params not defined\n";
+			if (!c2) reason += "filename not defined\n";
+			if (!c3) reason += "filename: " + filename + " too long\n";
+			throw std::invalid_argument(reason);
+		}
+	}
+	catch (std::invalid_argument &e) {
+		useful_funcs::exit_failure_output(e.what());
+		exit(EXIT_FAILURE);
+	}
+	catch (std::runtime_error &e) {
+		std::cerr << e.what();
 	}
 }

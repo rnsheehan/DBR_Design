@@ -215,3 +215,26 @@ double sweep::get_val(int i)
 		exit(EXIT_FAILURE);
 	}
 }
+
+std::vector<double> sweep::get_vals()
+{
+	// return the computed sweep parameters
+	// R. Sheehan 8 - 5 - 2019
+
+	try {
+		if (params_defined) {
+			return values; 
+		}
+		else {
+			return std::vector<double>();
+			std::string reason;
+			reason = "Error: std::vector<double> sweep::get_vals()\n";
+			reason += "Values not defined\n"; 
+			throw std::invalid_argument(reason);
+		}
+	}
+	catch (std::invalid_argument &e) {
+		useful_funcs::exit_failure_output(e.what());
+		exit(EXIT_FAILURE);
+	}
+}
