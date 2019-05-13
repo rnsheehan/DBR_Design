@@ -1,0 +1,8 @@
+Program Exit Explanation
+
+Error occurred: Wed May  8 16:05:10 2019
+
+Attempting to compute RI outside of allowed range in SiN::refractive_index()
+wavelength = 1.683 (um)
+Allowed range for SiN model is [ 0.414, 1.682 ]
+
